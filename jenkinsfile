@@ -2,17 +2,30 @@ pipeline {
   agent any
   tools {
     jdk 'JDK21'
-    maven 'Maven3'
+    maven 'M2_HOME'   // <-- replace M2_HOME with the exact "Name" shown in Global Tool Config
   }
+
   stages {
-    stage('Checkout') { steps { git branch: 'main', url: 'https://github.com/riadhbelgacem/TPGIT.git' } }
-    stage('Compile') { steps { sh 'mvn -B -DskipTests clean compile' } }
-    stage('Execute') { steps { sh 'mvn -q exec:java -Dexec.mainClass=Main || true' } } // only if exec plugin configured
+    stage('Checkout') {
+      steps { git branch: 'main', url: 'https://github.com/riadhbelgacem/TPGIT.git' }
+    }
+
+    stage('Compile') {
+      steps { sh 'mvn -B -DskipTests clean compile' }
+    }
+
+    stage('Execute') {
+      steps { sh 'java -cp target/classes Main || true' } // adjust main class/run method if needed
+    }
+
     stage('SonarQube Analysis') {
       steps {
-        // Name MUST match the SonarQube server name in Configure System
+        // ensure this name exactly matches Manage Jenkins -> Configure System -> SonarQube servers
         withSonarQubeEnv('MySonarQubeServer') {
-          sh 'mvn -B sonar:sonar'
+          // inject the secret token stored in Jenkins (id: jenkins-sonar)
+          withCredentials([string(credentialsId: 'jenkins-sonar', variable: 'SONAR_TOKEN')]) {
+            sh 'mvn -B sonar:sonar -Dsonar.login=$SONAR_TOKEN'
+          }
         }
       }
     }
