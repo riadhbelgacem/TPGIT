@@ -1,39 +1,20 @@
 pipeline {
-    agent any
-
-    tools {
-        jdk 'JDK21'
+  agent any
+  tools {
+    jdk 'JDK21'
+    maven 'Maven3'
+  }
+  stages {
+    stage('Checkout') { steps { git branch: 'main', url: 'https://github.com/riadhbelgacem/TPGIT.git' } }
+    stage('Compile') { steps { sh 'mvn -B -DskipTests clean compile' } }
+    stage('Execute') { steps { sh 'mvn -q exec:java -Dexec.mainClass=Main || true' } } // only if exec plugin configured
+    stage('SonarQube Analysis') {
+      steps {
+        // Name MUST match the SonarQube server name in Configure System
+        withSonarQubeEnv('MySonarQubeServer') {
+          sh 'mvn -B sonar:sonar'
+        }
+      }
     }
-
-    stages {
-           stage('Display Mesage') {
-            steps {
-                echo 'Hello from github....'
-            }
-        }
-        stage('Checkout code') {
-            steps {
-                git branch: 'main', url: 'https://github.com/riadhbelgacem/TPGIT.git'
-            }
-        }
-
-        stage('Compile code') {
-            steps {
-                sh 'javac src/Main.java'
-            }
-        }
-
-        stage('Execute code') {
-            steps {
-                sh 'java -cp src Main'
-            }
-        }
-     stage('SonarQube Analysis') {
-                steps {
-                   withSonarQubeEnv(installationName:'MySonarQubeServer' , credentialsId:'jenkins-sonar'){
-                        sh './mvnw clear org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
-                }
-            }
-        }
-    }
+  }
 }
