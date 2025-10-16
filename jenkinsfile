@@ -8,7 +8,7 @@ pipeline {
     stages {
            stage('Display Mesage') {
             steps {
-                echo 'Hello from github'
+                echo 'Hello from github..'
             }
         }
         stage('Checkout code') {
