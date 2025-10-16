@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK21'   // pas de ":" ici
+        jdk 'JDK21'
     }
 
     stages {
