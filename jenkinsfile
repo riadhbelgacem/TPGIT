@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+
+    tools {
+        jdk 'JDK21'   // pas de ":" ici
+    }
+
+    stages {
+        stage('Checkout code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/riadhbelgacem/TPGIT.git'
+            }
+        }
+
+        stage('Compile code') {
+            steps {
+                sh 'javac src/Main.java'
+            }
+        }
+
+        stage('Execute code') {
+            steps {
+                sh 'java -cp src Main'
+            }
+        }
+    }
+}
