@@ -6,6 +6,11 @@ pipeline {
     }
 
     stages {
+           stage('Display Mesage') {
+            steps {
+                echo 'Hello from github'
+            }
+        }
         stage('Checkout code') {
             steps {
                 git branch: 'main', url: 'https://github.com/riadhbelgacem/TPGIT.git'
