@@ -28,5 +28,12 @@ pipeline {
                 sh 'java -cp src Main'
             }
         }
+     stage('SonarQube Analysis') {
+                steps {
+                   withSonarQubeEnv(installationName:'MySonarQubeServer' , credentialsId:'jenkins-sonar'){
+                        sh './mvnw clear org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
+                }
+            }
+        }
     }
 }
